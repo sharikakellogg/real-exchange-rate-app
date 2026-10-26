@@ -459,35 +459,49 @@ def inject_css() -> None:
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
 :root {{ color-scheme: light; }}
 .stApp {{ background: {OFFWHITE}; color: {INK}; font-family: {FONT}; }}
-.block-container {{ padding-top: 1.6rem; padding-bottom: 3rem; max-width: 1280px; }}
+.block-container {{ padding-top: 1.35rem; padding-bottom: 3rem; max-width: 1360px; }}
 [data-testid="stSidebar"] {{ background: #ECE9E1; border-right: 1px solid {GRID}; }}
 [data-testid="stSidebar"] * {{ color: {INK}; }}
 [data-testid="stHeader"] {{ background: transparent; }}
 h1, h2, h3 {{ color: {NAVY}; font-family: 'Source Serif 4', Georgia, serif; letter-spacing: -0.01em; }}
+h2 {{ margin-top: 1.2rem; }}
+[data-testid="stVerticalBlock"] {{ gap: 0.85rem; }}
+[data-testid="stHorizontalBlock"] {{ align-items: stretch; }}
 .hero {{
   background: linear-gradient(120deg, {NAVY} 0%, #12365F 62%, {TEAL_DARK} 140%);
-  border-radius: 16px; padding: 26px 30px; margin-bottom: 18px; color: #fff;
+  border-radius: 18px; padding: 28px 32px; margin-bottom: 22px; color: #fff;
+  box-shadow: 0 8px 24px rgba(11,37,69,0.10);
 }}
 .hero h1 {{ color: #fff; margin: 0 0 4px 0; font-size: 1.85rem; }}
 .hero p {{ color: #D5E3EE; margin: 0; font-size: 0.95rem; }}
 .hero .pair {{ margin-top: 12px; font-size: 0.9rem; color: #BFE9E5; font-weight: 500; }}
 .kpi {{
   background: #fff; border: 1px solid {GRID}; border-top: 4px solid {TEAL};
-  border-radius: 12px; padding: 16px 18px 14px 18px; height: 100%;
-  box-shadow: 0 1px 2px rgba(11,37,69,0.05);
+  border-radius: 14px; padding: 17px 18px 15px 18px; min-height: 148px; height: 100%;
+  box-sizing: border-box; display: flex; flex-direction: column; gap: 4px;
+  box-shadow: 0 3px 10px rgba(11,37,69,0.045);
 }}
 .kpi.navy {{ border-top-color: {NAVY}; }}
 .kpi-label {{ font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; color: {MUTED}; font-weight: 600; }}
-.kpi-value {{ font-size: 1.9rem; font-weight: 700; color: {NAVY}; line-height: 1.25; margin: 4px 0 2px 0; }}
-.kpi-sub {{ font-size: 0.82rem; color: {MUTED}; }}
-.section-note {{ color: {MUTED}; font-size: 0.88rem; margin: -4px 0 10px 0; }}
+.kpi-value {{ font-size: clamp(1.45rem, 2vw, 1.9rem); font-weight: 700; color: {NAVY}; line-height: 1.25; margin: 5px 0 4px 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }}
+.kpi-sub {{ font-size: 0.82rem; color: {MUTED}; line-height: 1.4; margin-top: auto; }}
+.section-note {{ color: {MUTED}; font-size: 0.88rem; margin: -2px 0 12px 0; line-height: 1.5; }}
 button[data-baseweb="tab"] p {{ font-weight: 600; color: {NAVY}; }}
+button[data-baseweb="tab"] {{ min-height: 44px; }}
 [data-testid="stExpander"] {{ background: #fff; border: 1px solid {GRID}; border-radius: 12px; }}
-[data-baseweb="select"] > div {{ background-color: #fff; color: {INK}; }}
+[data-baseweb="select"] > div {{ background-color: #fff; color: {INK}; border-radius: 9px; }}
+[data-testid="stDataFrame"], [data-testid="stTable"] {{ border: 1px solid {GRID}; border-radius: 10px; overflow: hidden; }}
+[data-testid="stMetric"] {{ background: #fff; border: 1px solid {GRID}; border-radius: 12px; padding: 14px 16px; height: 100%; }}
 .stButton > button, .stDownloadButton > button {{
-  border-radius: 10px; border: 1px solid {TEAL_DARK}; color: {TEAL_DARK}; background: #fff; font-weight: 600;
+  min-height: 2.55rem; border-radius: 10px; border: 1px solid {TEAL_DARK};
+  color: {TEAL_DARK}; background: #fff; font-weight: 600; transition: all 120ms ease-in-out;
 }}
 .stButton > button:hover, .stDownloadButton > button:hover {{ background: {TEAL}; color: #fff; border-color: {TEAL}; }}
+@media (max-width: 900px) {{
+  .block-container {{ padding-left: 1rem; padding-right: 1rem; }}
+  .hero {{ padding: 22px 22px; }}
+  .kpi {{ min-height: 136px; padding: 14px; }}
+}}
 </style>
 """,
         unsafe_allow_html=True,
@@ -520,10 +534,12 @@ def style_figure(fig: go.Figure, height: int = 480) -> go.Figure:
     fig.update_xaxes(
         showgrid=False,
         linecolor=GRID,
+        automargin=True,
+        ticklabelstandoff=6,
         tickformatstops=[
             dict(dtickrange=[None, "M1"], value="%d %b %Y"),
             dict(dtickrange=["M1", "M12"], value="%b %Y"),
-            dict(dtickrange=["M12", None], value="%Y"),
+            dict(dtickrange=["M12", None], value="%b\n%Y"),
         ],
         rangeselector=dict(
             buttons=[
